@@ -40,6 +40,7 @@ public class TCPServer {
                         String type = args[1];
                         int size = Integer.parseInt(args[2]);
                         saveFile(size, type);
+                        output.println("OK");
                     } else if (command.startsWith("QUERY")) {
                         log("Query...");
                     } else if (command.startsWith("END")) {
