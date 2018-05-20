@@ -6,7 +6,6 @@ import java.nio.file.Paths;
 
 
 public class TCPServer {
-
     public static void main(String[] args) throws Exception {
         int clientNumber = 0;
         try (ServerSocket listener = new ServerSocket(7650)) {
@@ -19,8 +18,8 @@ public class TCPServer {
     public static class Handler extends Thread {
         private Socket socket;
         private int clientNumber;
-        private String fileName = "server-test";
-        private Path fileDir = Paths.get(System.getProperty("user.dir"), "l1", "tmp");
+        private String fileName = "decoding";
+        private Path fileDir = Paths.get(System.getProperty("user.dir"), "l1", "data");
 
         public Handler(Socket socket, int clientNumber) {
             this.socket = socket;
@@ -39,12 +38,17 @@ public class TCPServer {
                         log("Link starts.");
                     } else if (command.startsWith("SIZE")) {
                         String args[] = command.split("\\s|;");
-                        String type = args[1];
+                        String type = args[1].toLowerCase();
                         int size = Integer.parseInt(args[2]);
                         saveFile(size, type);
                         output.println("OK");
                     } else if (command.startsWith("QUERY")) {
-                        log("Query...");
+                        String args[] = command.split("\\s|;");
+                        String Op = args[1];
+                        String Name = args[2];
+                        String result = new XMLparser(Op, Name).run();
+                        log("Query: " + result);
+                        output.println("RESULT "+result);
                     } else if (command.startsWith("END")) {
                         log("Link ends.");
                         return;

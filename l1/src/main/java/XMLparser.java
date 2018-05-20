@@ -10,12 +10,21 @@ import java.nio.file.Paths;
 import java.util.*;
 
 public class XMLparser {
-    public static void main(String[] args) {
+    private String Name;
+    private String Op;
+
+
+    public XMLparser(String Op, String Name){
+        this.Op = Op;
+        this.Name = Name;
+    }
+    public String run() {
+        String result = "";
         try {
             SAXReader sr = new SAXReader();
-            Document doc = sr.read(new File("decoding.xml"));
+            Document doc = sr.read(new File("./l1/data/decoding.xml"));
             List<Node>  MeaQuantities = doc.selectNodes("//atfx_file/instance_data/MeaQuantity");
-            System.out.println(MeaQuantities.size());
+            //System.out.println(MeaQuantities.size());
             Map<String, String> nameMap = new HashMap<String, String>();
             Map<String, int[]> format = new HashMap<String, int[]>();
             Map<String, Vector<Double>> data = new HashMap<String, Vector<Double>>();
@@ -26,10 +35,11 @@ public class XMLparser {
             List<Node> extComp = doc.selectNodes("//atfx_file/instance_data/ExternalComponent");
             for (Node node : extComp) {
                 int[] temp = {Integer.parseInt(node.selectSingleNode("StartOffset").getText()),
-                        Integer.parseInt(node.selectSingleNode("Blocksize").getText()), Integer.parseInt(node.selectSingleNode("Length").getText())};
+                        Integer.parseInt(node.selectSingleNode("Blocksize").getText()),
+                        Integer.parseInt(node.selectSingleNode("Length").getText())};
                 format.put(node.selectSingleNode("LocalColumn").getText(), temp);
             }
-            byte[] bin = Files.readAllBytes(Paths.get("data_1.bin"));
+            byte[] bin = Files.readAllBytes(Paths.get("./l1/data/decoding.bin"));
             for (String s : nameMap.keySet()) {
                 int[] l = format.get(nameMap.get(s));
                 int offset = l[0];
@@ -63,9 +73,12 @@ public class XMLparser {
                 }
             }
             double min = Collections.min(data.get("CHANNEL06"));
-            System.out.println("The local column of CHANNEL06 is " + min);
+            //System.out.println("The local column of CHANNEL06 is " + min);
+            result = "The local column of CHANNEL06 is " + min;
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return result;
     }
 }
