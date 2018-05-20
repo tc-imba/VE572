@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 
 public class TCPServer {
@@ -18,7 +20,7 @@ public class TCPServer {
         private Socket socket;
         private int clientNumber;
         private String fileName = "server-test";
-        private String fileDir = "/home/zzhou612/Documents/IdeaProjects/socket-playground/data/";
+        private Path fileDir = Paths.get(System.getProperty("user.dir"), "l1", "tmp");
 
         public Handler(Socket socket, int clientNumber) {
             this.socket = socket;
@@ -66,7 +68,7 @@ public class TCPServer {
             log("Type: " + type);
             try {
                 DataInputStream dis = new DataInputStream(socket.getInputStream());
-                FileOutputStream fos = new FileOutputStream(fileDir + fileName + "." + type);
+                FileOutputStream fos = new FileOutputStream(fileDir.resolve(fileName + "." + type).toFile());
                 byte[] buffer = new byte[size];
                 int length;
                 int remaining = size;

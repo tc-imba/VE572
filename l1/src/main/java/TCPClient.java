@@ -1,8 +1,11 @@
 import java.io.*;
 import java.net.*;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 class TCPClient {
     public static void main(String[] args) throws IOException {
+        Path filePath = Paths.get(System.getProperty("user.dir"), "l1", "tmp", "client-test.txt") ;
         Socket socket = new Socket("127.0.0.1", 7650);
         BufferedReader input = new BufferedReader(
                 new InputStreamReader(socket.getInputStream(), "UTF-8"));
@@ -10,7 +13,7 @@ class TCPClient {
                 new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
         output.println("BEGIN;");
         output.println("QUERY;");
-        File file = new File("/home/zzhou612/Documents/IdeaProjects/socket-playground/data/client-test.txt");
+        File file = filePath.toFile();
         FileInputStream fis = new FileInputStream(file);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         output.format("SIZE txt %d;\n", file.length());
