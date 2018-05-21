@@ -1,10 +1,6 @@
-import org.dom4j.Document;
-import org.dom4j.Node;
-import org.dom4j.io.SAXReader;
-
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.PrintStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -12,8 +8,18 @@ import java.nio.file.Paths;
 import java.util.*;
 
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.dom4j.Document;
+import org.dom4j.Node;
+import org.dom4j.io.SAXReader;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
 public class XMLParser {
     private Document doc;
+    private String name;
     private Map<String, MeaQuantity> quantities;
     private Map<String, String> idToUnit;
     private Map<String, String> idToQuantity;
@@ -129,11 +135,13 @@ public class XMLParser {
 
     public void parse() {
         try {
+            Node subMatrix = this.doc.selectSingleNode("//atfx_file/instance_data/SubMatrix");
             List<Node> MeaQuantities = this.doc.selectNodes("//atfx_file/instance_data/MeaQuantity");
             List<Node> extComp = this.doc.selectNodes("//atfx_file/instance_data/ExternalComponent");
             List<Node> units = this.doc.selectNodes("//atfx_file/instance_data/Unit");
             List<Node> quantities = this.doc.selectNodes("//atfx_file/instance_data/Quantity");
             Map<String, String> LocalColumnToName = new HashMap<String, String>();
+            this.name = subMatrix.selectSingleNode("Name").getText();
             for (Node node : MeaQuantities) {
                 MeaQuantity mq = new MeaQuantity();
                 mq.name = node.selectSingleNode("Name").getText();
@@ -222,12 +230,40 @@ public class XMLParser {
         }
     }
 
-    public void writeText(String fileName) {
+    public void writeXlsx(String fileName) {
+        FileOutputStream out = null;
         try {
-            PrintStream out = new PrintStream(new FileOutputStream(new File(fileName)));
-            out.println("111");
+            Workbook workBook = new XSSFWorkbook();
+            Sheet sheet = workBook.createSheet(this.name);
+            sheet.setDefaultColumnWidth(20);
+
+            Row row1 = sheet.createRow(0);
+            Row row2 = sheet.createRow(1);
+            int i = 0;
+            for (String s : this.quantities.keySet()) {
+                MeaQuantity mq = this.quantities.get(s);
+                Cell cell = row1.createCell(i);
+                cell.setCellValue(mq.name);
+                cell = row2.createCell(i);
+                cell.setCellValue(this.idToUnit.get(mq.unitID));
+                i++;
+            }
+
+            out = new FileOutputStream(new File(fileName));
+            workBook.write(out);
+            out.flush();
+            out.close();
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            try {
+                if (out != null) {
+                    out.flush();
+                    out.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
