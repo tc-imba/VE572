@@ -17,14 +17,14 @@ import org.dom4j.io.SAXReader;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
-public class XMLParser {
+public class DataExtractor {
     private Document doc;
     private String name;
     private Map<String, MeaQuantity> quantities;
     private Map<String, String> idToUnit;
     private Map<String, String> idToQuantity;
 
-    public XMLParser(String Filename) throws Exception {
+    public DataExtractor(String Filename) throws Exception {
         SAXReader sr = new SAXReader();
         this.doc = sr.read(new File(Filename));
         this.quantities = new HashMap<String, MeaQuantity>();

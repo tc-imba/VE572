@@ -46,7 +46,7 @@ public class TCPServer {
                         String args[] = command.split("\\s|;");
                         String Op = args[1];
                         String Name = args[2];
-//                        String result = new XMLParser(Name).run();
+//                        String result = new DataExtractor(Name).run();
 //                        log("Query: " + result);
 //                        output.println("RESULT "+result);
                     } else if (command.startsWith("END")) {
