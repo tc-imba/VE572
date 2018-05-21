@@ -3,16 +3,14 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
-import java.math.BigDecimal;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.stream.DoubleStream;
-import java.util.stream.IntStream;
-import java.math.*;
-import java.util.stream.LongStream;
+
 
 public class XMLParser {
     private Document doc;
@@ -84,7 +82,7 @@ public class XMLParser {
             Number[] temp = this.data.clone();
             Arrays.sort(temp);
             this.min = temp[0];
-            this.max = temp[1];
+            this.max = temp[this.length - 1];
             return temp;
         }
 
@@ -195,7 +193,7 @@ public class XMLParser {
         try {
             byte[] bin = Files.readAllBytes(Paths.get(fileName));
             ByteBuffer buffer = ByteBuffer.wrap(bin);
-            buffer.order(ByteOrder.BIG_ENDIAN);
+            buffer.order(ByteOrder.LITTLE_ENDIAN);
             for (String s : this.quantities.keySet()) {
                 MeaQuantity mq = this.quantities.get(s);
                 switch (mq.type) {
@@ -219,7 +217,15 @@ public class XMLParser {
                         throw new Exception("Unknown data type!");
                 }
             }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
+    public void writeText(String fileName) {
+        try {
+            PrintStream out = new PrintStream(new FileOutputStream(new File(fileName)));
+            out.println("111");
         } catch (Exception e) {
             e.printStackTrace();
         }
