@@ -3,6 +3,7 @@ import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.file.Files;
@@ -10,6 +11,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
+import java.math.*;
+import java.util.stream.LongStream;
 
 public class XMLParser {
     private Document doc;
@@ -23,18 +26,6 @@ public class XMLParser {
         this.quantities = new HashMap<String, MeaQuantity>();
         this.idToQuantity = new HashMap<String, String>();
         this.idToUnit = new HashMap<String, String>();
-    }
-
-    public static void main(String[] args) {
-        try {
-            XMLParser parser = new XMLParser("validate.xml");
-            parser.parse();
-            parser.readBinary("validate.bin");
-            System.out.println(parser.query("Cilarry_Harrinton", "MAX"));
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
     }
 
     private class MeaQuantity {
@@ -51,90 +42,92 @@ public class XMLParser {
         private Number max;
         private Number med;
         private Number avg;
-        private Number sum;
+        private Number sum = 0;
 
-        private void parseShort(ByteBuffer buffer) throws Exception {
+        private void parseShort(ByteBuffer buffer) {
             for (int i = 0; i < this.length; i++) {
                 int offset = this.startOffset + i * blocksize + valueOffset;
-                this.data[i] = buffer.getShort(offset);
+                Short num = buffer.getShort(offset);
+                this.data[i] = num;
+                sum = sum.shortValue() + num;
             }
         }
 
-        private void parseLong(ByteBuffer buffer) throws Exception {
+        private void parseLong(ByteBuffer buffer) {
             for (int i = 0; i < this.length; i++) {
                 int offset = this.startOffset + i * blocksize + valueOffset;
-                this.data[i] = buffer.getInt(offset);
+                Integer num = buffer.getInt(offset);
+                this.data[i] = num;
+                sum = sum.intValue() + num;
             }
         }
 
-        private void parseFloat(ByteBuffer buffer) throws Exception {
+        private void parseFloat(ByteBuffer buffer) {
             for (int i = 0; i < this.length; i++) {
                 int offset = this.startOffset + i * blocksize + valueOffset;
-                this.data[i] = buffer.getFloat(offset);
+                Float num = buffer.getFloat(offset);
+                this.data[i] = num;
+                sum = sum.floatValue() + num;
             }
         }
 
-        private void parseDouble(ByteBuffer buffer) throws Exception {
+        private void parseDouble(ByteBuffer buffer) {
             for (int i = 0; i < this.length; i++) {
                 int offset = this.startOffset + i * blocksize + valueOffset;
-                this.data[i] = buffer.getDouble(offset);
+                Double num = buffer.getDouble(offset);
+                this.data[i] = num;
+                sum = sum.doubleValue() + num;
             }
         }
 
-        private void calculate() throws Exception {
+        private Number[] calculate() {
             Number[] temp = this.data.clone();
             Arrays.sort(temp);
             this.min = temp[0];
             this.max = temp[1];
-            Number a = temp[this.length / 2];
-            Number b = temp[this.length / 2];
-            if (this.length % 2 == 0) {
-                a = temp[this.length / 2 - 1];
-            }
-            switch (this.type) {
-                case "DT_SHORT":
-                    this.med = (a.shortValue() + b.shortValue()) / 2;
-                    
-                    break;
-                case "DT_LONG":
-                    this.med = (a.intValue() + b.intValue()) / 2;
-
-                    break;
-                case "DT_FLOAT":
-                    this.med = (a.floatValue() + b.floatValue()) / 2;
-
-                    break;
-                case "DT_DOUBLE":
-                    this.med = (a.doubleValue() + b.doubleValue()) / 2;
-
-                    break;
-                default:
-                    throw new Exception("Unknown data type!");
-            }
+            return temp;
         }
 
+        private void calculateShort() {
+            Number[] temp = this.calculate();
+            if (this.length % 2 == 0) {
+                this.med = (temp[this.length / 2 - 1].shortValue() + temp[this.length / 2].shortValue()) / 2;
+            } else {
+                this.med = temp[this.length / 2];
+            }
+            this.avg = this.sum.shortValue() / this.length;
+        }
 
-//        public void prepare(Vector<T> v) {
-//            Collections.sort(v);
-//            this.min = v.firstElement();
-//            this.max = v.lastElement();
-//            if (this.length % 2 == 0) {
-//                this.med = v.elementAt(this.length / 2 - 1) + v.elementAt(this.length / 2 )
-//            }
-//        }
-    }
+        private void calculateLong() {
+            Number[] temp = this.calculate();
+            if (this.length % 2 == 0) {
+                this.med = (temp[this.length / 2 - 1].intValue() + temp[this.length / 2].intValue()) / 2;
+            } else {
+                this.med = temp[this.length / 2];
+            }
+            this.avg = this.sum.shortValue() / this.length;
+        }
 
-/*    Arrays.sort(shortList);
-    mq.min = shortList[0];
-    mq.max = shortList[mq.length - 1];
-                        if (mq.length % 2 == 0) {
-        mq.med = (shortList[mq.length / 2 - 1] + shortList[mq.length / 2]) / 2;
-    } else {
-        mq.med = shortList[mq.length / 2];
+        private void calculateFloat() {
+            Number[] temp = this.calculate();
+            if (this.length % 2 == 0) {
+                this.med = (temp[this.length / 2 - 1].floatValue() + temp[this.length / 2].floatValue()) / 2;
+            } else {
+                this.med = temp[this.length / 2];
+            }
+            this.avg = this.sum.shortValue() / this.length;
+        }
+
+        private void calculateDouble() {
+            Number[] temp = this.calculate();
+            if (this.length % 2 == 0) {
+                this.med = (temp[this.length / 2 - 1].doubleValue() + temp[this.length / 2].doubleValue()) / 2;
+            } else {
+                this.med = temp[this.length / 2];
+            }
+            this.avg = this.sum.shortValue() / this.length;
+        }
     }
-    int shortSum = IntStream.of(shortList).sum();
-    mq.sum = shortSum;
-    mq.avg = shortSum / mq.length;*/
 
     public void parse() {
         try {
@@ -168,15 +161,6 @@ public class XMLParser {
             }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-    }
-
-    private void leo2beo(byte[] b) {
-        int len = b.length;
-        for (int j = 0; j <= len / 2; j++) {
-            byte temp = b[j];
-            b[j] = b[len - 1 - j];
-            b[len - 1 - j] = temp;
         }
     }
 
@@ -214,19 +198,22 @@ public class XMLParser {
             buffer.order(ByteOrder.BIG_ENDIAN);
             for (String s : this.quantities.keySet()) {
                 MeaQuantity mq = this.quantities.get(s);
-//                Vector v;
                 switch (mq.type) {
                     case "DT_SHORT":
                         mq.parseShort(buffer);
+                        mq.calculateShort();
                         break;
                     case "DT_LONG":
                         mq.parseLong(buffer);
+                        mq.calculateLong();
                         break;
                     case "DT_FLOAT":
                         mq.parseFloat(buffer);
+                        mq.calculateFloat();
                         break;
                     case "DT_DOUBLE":
                         mq.parseDouble(buffer);
+                        mq.calculateDouble();
                         break;
                     default:
                         throw new Exception("Unknown data type!");
