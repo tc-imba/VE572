@@ -1,25 +1,23 @@
 import org.dom4j.Document;
 import org.dom4j.Node;
-import org.dom4j.DocumentException;
 import org.dom4j.io.SAXReader;
 
 import java.io.File;
-import java.lang.reflect.Parameter;
 import java.nio.ByteBuffer;
-import java.nio.ShortBuffer;
+import java.nio.ByteOrder;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.DoubleStream;
 import java.util.stream.IntStream;
 
-public class XMLparser {
+public class XMLParser {
     private Document doc;
     private Map<String, MeaQuantity> quantities;
     private Map<String, String> idToUnit;
     private Map<String, String> idToQuantity;
 
-    public XMLparser(String Filename) throws Exception {
+    public XMLParser(String Filename) throws Exception {
         SAXReader sr = new SAXReader();
         this.doc = sr.read(new File(Filename));
         this.quantities = new HashMap<String, MeaQuantity>();
@@ -29,7 +27,7 @@ public class XMLparser {
 
     public static void main(String[] args) {
         try {
-            XMLparser parser = new XMLparser("validate.xml");
+            XMLParser parser = new XMLParser("validate.xml");
             parser.parse();
             parser.readBinary("validate.bin");
             System.out.println(parser.query("Cilarry_Harrinton", "MAX"));
@@ -48,12 +46,73 @@ public class XMLparser {
         private int valueOffset;
         private String unitID;
         private int length;
-//        private Vector data;
+        private Number[] data;
         private Number min;
         private Number max;
         private Number med;
         private Number avg;
         private Number sum;
+
+        private void parseShort(ByteBuffer buffer) throws Exception {
+            for (int i = 0; i < this.length; i++) {
+                int offset = this.startOffset + i * blocksize + valueOffset;
+                this.data[i] = buffer.getShort(offset);
+            }
+        }
+
+        private void parseLong(ByteBuffer buffer) throws Exception {
+            for (int i = 0; i < this.length; i++) {
+                int offset = this.startOffset + i * blocksize + valueOffset;
+                this.data[i] = buffer.getInt(offset);
+            }
+        }
+
+        private void parseFloat(ByteBuffer buffer) throws Exception {
+            for (int i = 0; i < this.length; i++) {
+                int offset = this.startOffset + i * blocksize + valueOffset;
+                this.data[i] = buffer.getFloat(offset);
+            }
+        }
+
+        private void parseDouble(ByteBuffer buffer) throws Exception {
+            for (int i = 0; i < this.length; i++) {
+                int offset = this.startOffset + i * blocksize + valueOffset;
+                this.data[i] = buffer.getDouble(offset);
+            }
+        }
+
+        private void calculate() throws Exception {
+            Number[] temp = this.data.clone();
+            Arrays.sort(temp);
+            this.min = temp[0];
+            this.max = temp[1];
+            Number a = temp[this.length / 2];
+            Number b = temp[this.length / 2];
+            if (this.length % 2 == 0) {
+                a = temp[this.length / 2 - 1];
+            }
+            switch (this.type) {
+                case "DT_SHORT":
+                    this.med = (a.shortValue() + b.shortValue()) / 2;
+                    
+                    break;
+                case "DT_LONG":
+                    this.med = (a.intValue() + b.intValue()) / 2;
+
+                    break;
+                case "DT_FLOAT":
+                    this.med = (a.floatValue() + b.floatValue()) / 2;
+
+                    break;
+                case "DT_DOUBLE":
+                    this.med = (a.doubleValue() + b.doubleValue()) / 2;
+
+                    break;
+                default:
+                    throw new Exception("Unknown data type!");
+            }
+        }
+
 
 //        public void prepare(Vector<T> v) {
 //            Collections.sort(v);
@@ -65,9 +124,21 @@ public class XMLparser {
 //        }
     }
 
+/*    Arrays.sort(shortList);
+    mq.min = shortList[0];
+    mq.max = shortList[mq.length - 1];
+                        if (mq.length % 2 == 0) {
+        mq.med = (shortList[mq.length / 2 - 1] + shortList[mq.length / 2]) / 2;
+    } else {
+        mq.med = shortList[mq.length / 2];
+    }
+    int shortSum = IntStream.of(shortList).sum();
+    mq.sum = shortSum;
+    mq.avg = shortSum / mq.length;*/
+
     public void parse() {
         try {
-            List<Node>  MeaQuantities = this.doc.selectNodes("//atfx_file/instance_data/MeaQuantity");
+            List<Node> MeaQuantities = this.doc.selectNodes("//atfx_file/instance_data/MeaQuantity");
             List<Node> extComp = this.doc.selectNodes("//atfx_file/instance_data/ExternalComponent");
             List<Node> units = this.doc.selectNodes("//atfx_file/instance_data/Unit");
             List<Node> quantities = this.doc.selectNodes("//atfx_file/instance_data/Quantity");
@@ -87,6 +158,7 @@ public class XMLparser {
                 mq.startOffset = Integer.parseInt(node.selectSingleNode("StartOffset").getText());
                 mq.valueOffset = Integer.parseInt(node.selectSingleNode("ValueOffset").getText());
                 mq.blocksize = Integer.parseInt(node.selectSingleNode("Blocksize").getText());
+                mq.data = new Number[mq.length];
             }
             for (Node node : units) {
                 this.idToUnit.put(node.selectSingleNode("Id").getText(), node.selectSingleNode("Name").getText());
@@ -99,7 +171,7 @@ public class XMLparser {
         }
     }
 
-    private void leo2beo (byte[] b) {
+    private void leo2beo(byte[] b) {
         int len = b.length;
         for (int j = 0; j <= len / 2; j++) {
             byte temp = b[j];
@@ -117,7 +189,7 @@ public class XMLparser {
             case "MIN":
                 result = mq.min.toString();
                 break;
-            case  "MAX":
+            case "MAX":
                 result = mq.max.toString();
                 break;
             case "MEDIAN":
@@ -129,104 +201,38 @@ public class XMLparser {
             case "AVG":
                 result = mq.avg.toString();
                 break;
-                default:
-                    return Op + " not available!";
+            default:
+                return Op + " not available!";
         }
         return head + result + tail;
     }
 
     public void readBinary(String fileName) {
-        try{
+        try {
             byte[] bin = Files.readAllBytes(Paths.get(fileName));
-            byte[] b;
+            ByteBuffer buffer = ByteBuffer.wrap(bin);
+            buffer.order(ByteOrder.BIG_ENDIAN);
             for (String s : this.quantities.keySet()) {
                 MeaQuantity mq = this.quantities.get(s);
 //                Vector v;
                 switch (mq.type) {
                     case "DT_SHORT":
-                        int[] shortList = new int[mq.length];
-                        for (int i = mq.startOffset, j= 0; i < mq.startOffset + mq.length * mq.blocksize; i += mq.blocksize, j++) {
-                            b = Arrays.copyOfRange(bin, i+mq.valueOffset, i+mq.valueOffset+2);
-                            leo2beo(b);
-                            shortList[j] = ByteBuffer.wrap(b).getShort();
-                        }
-                        Arrays.sort(shortList);
-                        mq.min = shortList[0];
-                        mq.max = shortList[mq.length-1];
-                        if (mq.length % 2 == 0) {
-                            mq.med = (shortList[mq.length / 2 - 1] + shortList[mq.length / 2]) / 2;
-                        }
-                        else {
-                            mq.med = shortList[mq.length / 2];
-                        }
-                        int shortSum = IntStream.of(shortList).sum();
-                        mq.sum = shortSum;
-                        mq.avg = shortSum / mq.length;
+                        mq.parseShort(buffer);
                         break;
                     case "DT_LONG":
-                        int[] intList = new int[mq.length];
-                        for (int i = mq.startOffset, j = 0; i < mq.startOffset + mq.length * mq.blocksize; i += mq.blocksize, j++) {
-                            b = Arrays.copyOfRange(bin, i+mq.valueOffset, i+mq.valueOffset+4);
-                            leo2beo(b);
-                            intList[j] = ByteBuffer.wrap(b).getInt();
-                        }
-                        Arrays.sort(intList);
-                        mq.min = intList[0];
-                        mq.max = intList[mq.length-1];
-                        if (mq.length % 2 == 0) {
-                            mq.med = (intList[mq.length / 2 - 1] + intList[mq.length / 2]) / 2;
-                        }
-                        else {
-                            mq.med = intList[mq.length / 2];
-                        }
-                        int intSum = IntStream.of(intList).sum();
-                        mq.sum = intSum;
-                        mq.avg = intSum / mq.length;
+                        mq.parseLong(buffer);
                         break;
                     case "DT_FLOAT":
-                        double[] floatList = new double[mq.length];
-                        for (int i = mq.startOffset, j = 0; i < mq.startOffset + mq.length * mq.blocksize; i += mq.blocksize, j++) {
-                            b = Arrays.copyOfRange(bin, i+mq.valueOffset, i+mq.valueOffset+4);
-                            leo2beo(b);
-                            floatList[j] = ByteBuffer.wrap(b).getFloat();
-                        }
-                        Arrays.sort(floatList);
-                        mq.min = floatList[0];
-                        mq.max = floatList[mq.length-1];
-                        if (mq.length % 2 == 0) {
-                            mq.med = (floatList[mq.length / 2 - 1] + floatList[mq.length / 2]) / 2;
-                        }
-                        else {
-                            mq.med = floatList[mq.length / 2];
-                        }
-                        double floatSum = DoubleStream.of(floatList).sum();
-                        mq.sum = floatSum;
-                        mq.avg = floatSum / mq.length;
+                        mq.parseFloat(buffer);
                         break;
                     case "DT_DOUBLE":
-                        double[] doubleList = new double[mq.length];
-                        for (int i = mq.startOffset, j = 0; i < mq.startOffset + mq.length * mq.blocksize; i += mq.blocksize, j++) {
-                            b = Arrays.copyOfRange(bin, i+mq.valueOffset, i+mq.valueOffset+8);
-                            leo2beo(b);
-                            doubleList[j] = ByteBuffer.wrap(b).getDouble();
-                        }
-                        Arrays.sort(doubleList);
-                        mq.min = doubleList[0];
-                        mq.max = doubleList[mq.length-1];
-                        if (mq.length % 2 == 0) {
-                            mq.med = (doubleList[mq.length / 2 - 1] + doubleList[mq.length / 2]) / 2;
-                        }
-                        else {
-                            mq.med = doubleList[mq.length / 2];
-                        }
-                        double doubleSum = DoubleStream.of(doubleList).sum();
-                        mq.sum = doubleSum;
-                        mq.avg = doubleSum / mq.length;
+                        mq.parseDouble(buffer);
                         break;
                     default:
                         throw new Exception("Unknown data type!");
                 }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
         }
