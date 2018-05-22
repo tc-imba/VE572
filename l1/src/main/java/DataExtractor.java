@@ -8,14 +8,11 @@ import java.nio.file.Paths;
 import java.util.*;
 
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.xssf.usermodel.*;
 
 public class DataExtractor {
     private Document doc;
@@ -231,39 +228,67 @@ public class DataExtractor {
     }
 
     public void writeXlsx(String fileName) {
-        FileOutputStream out = null;
+        int i = 0;
+        int j = 2;
+        XSSFWorkbook wb = new XSSFWorkbook();
+        XSSFSheet sheet = wb.createSheet();
+        XSSFCellStyle cellStyle = wb.createCellStyle();
         try {
-            Workbook workBook = new XSSFWorkbook();
-            Sheet sheet = workBook.createSheet(this.name);
-            sheet.setDefaultColumnWidth(20);
-
-            Row row1 = sheet.createRow(0);
-            Row row2 = sheet.createRow(1);
-            int i = 0;
-            for (String s : this.quantities.keySet()) {
+            //PrintStream out = new PrintStream(new FileOutputStream(new File(fileName)));
+            XSSFRow nameRow = sheet.createRow(0);
+            for (String s : this.quantities.keySet()){
+                Cell cell = nameRow.createCell(i++);
+                cell.setCellValue(s);
+            }
+            i = 0;
+            XSSFRow unitRow = sheet.createRow(1);
+            for (String s : this.quantities.keySet()){
                 MeaQuantity mq = this.quantities.get(s);
-                Cell cell = row1.createCell(i);
-                cell.setCellValue(mq.name);
-                cell = row2.createCell(i);
+                XSSFCell cell = unitRow.createCell(i++);
                 cell.setCellValue(this.idToUnit.get(mq.unitID));
+            }
+
+            i = 0;
+
+            for (String s : this.quantities.keySet()){
+                j = 2;
+                MeaQuantity mq = this.quantities.get(s);
+                for (Number num: mq.data){
+                    XSSFRow valueRow = null;
+                    if (i==0){
+                        valueRow= sheet.createRow(j++);
+                    }
+                    else{
+                        valueRow = sheet.getRow(j++);
+                    }
+                    XSSFCell cell = valueRow.createCell(i);
+                    switch (mq.type) {
+                        case "DT_SHORT":
+                            cell.setCellValue((Short)num);
+                            break;
+                        case "DT_LONG":
+                            cell.setCellValue((int)num);
+                            break;
+                        case "DT_FLOAT":
+                            cell.setCellValue((Float)num);
+                            break;
+                        case "DT_DOUBLE":
+                            cell.setCellValue((Double)num);
+                            break;
+                        default:
+                            throw new Exception("Unknown data type!");
+                    }
+
+                }
                 i++;
             }
+            FileOutputStream fos = new FileOutputStream(fileName);
+            wb.write(fos);
+            fos.flush();
+            fos.close();
 
-            out = new FileOutputStream(new File(fileName));
-            workBook.write(out);
-            out.flush();
-            out.close();
         } catch (Exception e) {
             e.printStackTrace();
-        } finally {
-            try {
-                if (out != null) {
-                    out.flush();
-                    out.close();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
     }
 }
