@@ -15,5 +15,5 @@ mvn exec:java -Dexec.mainClass="TCPServer"
 ### Run the client
 
 ```bash
-mvn exec:java -Dexec.mainClass="TCPClient" <host>
+mvn exec:java -Dexec.mainClass="TCPClient" -Dexec.args="<host>"
 ```
