@@ -3,7 +3,12 @@ import java.net.*;
 
 class TCPClient {
     public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("127.0.0.1", 7650);
+        String host = "127.0.0.1";
+        if (args.length > 0) {
+            host = args[0];
+        }
+        System.out.println(args.length);
+        Socket socket = new Socket(host, 7650);
         BufferedReader input = new BufferedReader(
                 new InputStreamReader(socket.getInputStream(), "UTF-8"));
         PrintWriter output = new PrintWriter(
