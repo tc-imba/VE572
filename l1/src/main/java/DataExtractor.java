@@ -8,6 +8,8 @@ import java.nio.file.Paths;
 import java.util.*;
 
 
+import org.apache.poi.common.usermodel.fonts.FontCharset;
+import org.apache.poi.ss.usermodel.Font;
 import org.dom4j.Document;
 import org.dom4j.Node;
 import org.dom4j.io.SAXReader;
@@ -231,7 +233,8 @@ public class DataExtractor {
         int i = 0;
         int j = 2;
         XSSFWorkbook wb = new XSSFWorkbook();
-        XSSFSheet sheet = wb.createSheet();
+        XSSFSheet sheet = wb.createSheet(this.name);
+        sheet.setDefaultColumnWidth(20);
         XSSFCellStyle cellStyle = wb.createCellStyle();
         try {
             //PrintStream out = new PrintStream(new FileOutputStream(new File(fileName)));
@@ -267,7 +270,7 @@ public class DataExtractor {
                             cell.setCellValue((Short)num);
                             break;
                         case "DT_LONG":
-                            cell.setCellValue((int)num);
+                            cell.setCellValue((Integer)num);
                             break;
                         case "DT_FLOAT":
                             cell.setCellValue((Float)num);

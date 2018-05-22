@@ -5,7 +5,7 @@ public class DataExtractorTester {
             DataExtractor parser = new DataExtractor("data/validate.xml");
             parser.parse();
             parser.readBinary("data/validate.bin");
-            System.out.println(parser.query("Cilarry_Harrinton", "MAX"));
+//            System.out.println(parser.query("Cilarry_Harrinton", "MAX"));
             parser.writeXlsx("data/validate.xlsx");
         } catch (Exception e) {
             e.printStackTrace();
