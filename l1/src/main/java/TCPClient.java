@@ -12,7 +12,7 @@ class TCPClient {
         System.out.println("BEGIN;");
         System.out.println(input.readLine());
 
-        File file = new File("./l1/specs/decoding.xml");
+        File file = new File("./specs/decoding.xml");
         FileInputStream fis = new FileInputStream(file);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
         output.format("SIZE XML %d;\n", file.length());
@@ -26,7 +26,7 @@ class TCPClient {
         fis.close();
         System.out.println(input.readLine());
 
-        file = new File("./l1/specs/data_1.bin");
+        file = new File("./specs/data_1.bin");
         fis = new FileInputStream(file);
         dos = new DataOutputStream(socket.getOutputStream());
         output.format("SIZE BIN %d;\n", file.length());
@@ -42,11 +42,12 @@ class TCPClient {
         output.println("QUERY MIN CHANNEL06;");
         System.out.println("QUERY MIN CHANNEL06;");
         System.out.println(input.readLine());
-
         System.out.println(input.readLine());
+
         output.println("END;");
         System.out.println("END;");
         System.out.println(input.readLine());
+
         socket.close();
         System.exit(0);
     }

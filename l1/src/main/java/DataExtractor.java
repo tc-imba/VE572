@@ -169,12 +169,15 @@ public class DataExtractor {
         }
     }
 
-    public String query(String name, String Op) {
+    public String query(String name, String op) {
         MeaQuantity mq = this.quantities.get(name);
+        if (mq == null) {
+            return "Error: " + name + " not found";
+        }
         String head = "RESULT " + name + " OF " + this.idToQuantity.get(mq.quantityID) + " ";
         String tail = " " + this.idToUnit.get(mq.unitID) + " FROM " + mq.length + " POINTS";
         String result;
-        switch (Op) {
+        switch (op) {
             case "MIN":
                 result = mq.min.toString();
                 break;
@@ -191,7 +194,7 @@ public class DataExtractor {
                 result = mq.avg.toString();
                 break;
             default:
-                return Op + " not available!";
+                return "Error: " + op + " not available!";
         }
         return head + result + tail;
     }
@@ -239,13 +242,13 @@ public class DataExtractor {
         try {
             //PrintStream out = new PrintStream(new FileOutputStream(new File(fileName)));
             XSSFRow nameRow = sheet.createRow(0);
-            for (String s : this.quantities.keySet()){
+            for (String s : this.quantities.keySet()) {
                 Cell cell = nameRow.createCell(i++);
                 cell.setCellValue(s);
             }
             i = 0;
             XSSFRow unitRow = sheet.createRow(1);
-            for (String s : this.quantities.keySet()){
+            for (String s : this.quantities.keySet()) {
                 MeaQuantity mq = this.quantities.get(s);
                 XSSFCell cell = unitRow.createCell(i++);
                 cell.setCellValue(this.idToUnit.get(mq.unitID));
@@ -253,30 +256,29 @@ public class DataExtractor {
 
             i = 0;
 
-            for (String s : this.quantities.keySet()){
+            for (String s : this.quantities.keySet()) {
                 j = 2;
                 MeaQuantity mq = this.quantities.get(s);
-                for (Number num: mq.data){
+                for (Number num : mq.data) {
                     XSSFRow valueRow = null;
-                    if (i==0){
-                        valueRow= sheet.createRow(j++);
-                    }
-                    else{
+                    if (i == 0) {
+                        valueRow = sheet.createRow(j++);
+                    } else {
                         valueRow = sheet.getRow(j++);
                     }
                     XSSFCell cell = valueRow.createCell(i);
                     switch (mq.type) {
                         case "DT_SHORT":
-                            cell.setCellValue((Short)num);
+                            cell.setCellValue((Short) num);
                             break;
                         case "DT_LONG":
-                            cell.setCellValue((Integer)num);
+                            cell.setCellValue((Integer) num);
                             break;
                         case "DT_FLOAT":
-                            cell.setCellValue((Float)num);
+                            cell.setCellValue((Float) num);
                             break;
                         case "DT_DOUBLE":
-                            cell.setCellValue((Double)num);
+                            cell.setCellValue((Double) num);
                             break;
                         default:
                             throw new Exception("Unknown data type!");
