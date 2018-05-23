@@ -13,14 +13,14 @@ class TCPClient {
                 new InputStreamReader(socket.getInputStream(), "UTF-8"));
         PrintWriter output = new PrintWriter(
                 new OutputStreamWriter(socket.getOutputStream(), "UTF-8"), true);
-        output.println("BEGIN;");
+        output.println("BEGIN;;;;;;;");
         System.out.println("BEGIN;");
         System.out.println(input.readLine());
 
-        File file = new File("./specs/decoding.xml");
+        File file = new File("./specs/validate.xml");
         FileInputStream fis = new FileInputStream(file);
         DataOutputStream dos = new DataOutputStream(socket.getOutputStream());
-        output.format("SIZE XML %d;\n", file.length());
+        output.format("SIZE    XML    %d;\n", file.length());
         System.out.println("SIZE XML " + file.length() + ";");
         System.out.println(input.readLine());
         byte[] bytes = new byte[1024];
@@ -31,7 +31,7 @@ class TCPClient {
         fis.close();
         System.out.println(input.readLine());
 
-        file = new File("./specs/data_1.bin");
+        file = new File("./specs/validate.bin");
         fis = new FileInputStream(file);
         dos = new DataOutputStream(socket.getOutputStream());
         output.format("SIZE BIN %d;\n", file.length());
@@ -44,8 +44,8 @@ class TCPClient {
         System.out.println(input.readLine());
 
 
-        output.println("QUERY MIN CHANNEL06;");
-        System.out.println("QUERY MIN CHANNEL06;");
+        output.println("QUERY MAX Cilarry_Harrinton;");
+        System.out.println("QUERY MAX Cilarry_Harrinton;");
         System.out.println(input.readLine());
         System.out.println(input.readLine());
 

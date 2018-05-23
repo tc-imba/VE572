@@ -41,14 +41,14 @@ public class TCPServer {
 
         private State state = State.BEGIN;
 
-        public Handler(Socket socket, int clientNumber) {
+        Handler(Socket socket, int clientNumber) {
             this.socket = socket;
             this.clientNumber = clientNumber;
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
             this.date = df.format(new Date());
         }
 
-        public boolean runCommand(String[] args, PrintWriter output) throws Exception {
+        private boolean runCommand(String[] args, PrintWriter output) throws Exception {
             switch (args[0].toLowerCase()) {
                 case "begin":
                     if (state == State.BEGIN) {
@@ -112,19 +112,18 @@ public class TCPServer {
             return true;
         }
 
-        public boolean readLine(BufferedReader input, PrintWriter output) throws Exception {
+        private boolean readLine(BufferedReader input, PrintWriter output) throws Exception {
             this.inputBuffer += input.readLine();
-            int pos = this.inputBuffer.indexOf(';');
-            if (pos < 0) return true;
-            String args[] = this.inputBuffer.substring(0, pos).split("\\s");
-            this.inputBuffer = this.inputBuffer.substring(pos + 1);
-            /*for (String arg : args) {
-                System.out.println(arg);
-            }*/
-            if (args.length > 0) {
-                return this.runCommand(args, output);
+            boolean flag = true;
+            int pos;
+            while ((pos = this.inputBuffer.indexOf(';')) >= 0) {
+                String args[] = this.inputBuffer.substring(0, pos).split("\\s+");
+                this.inputBuffer = this.inputBuffer.substring(pos + 1);
+                if (args.length > 0 && args[0].length() > 0) {
+                    flag &= this.runCommand(args, output);
+                }
             }
-            return true;
+            return flag;
         }
 
         public void run() {
