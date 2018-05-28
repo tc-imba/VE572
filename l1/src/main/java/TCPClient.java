@@ -44,8 +44,8 @@ class TCPClient {
         System.out.println(input.readLine());
 
 
-        output.println("QUERY MAX Cilarry_Harrinton;");
-        System.out.println("QUERY MAX Cilarry_Harrinton;");
+        output.println("QUERY MAX 😂😏😏😏🙄;");
+        System.out.println("QUERY MAX 😂😏😏😏🙄;");
         System.out.println(input.readLine());
         System.out.println(input.readLine());
 
