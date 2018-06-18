@@ -24,8 +24,10 @@ method1_fn <- function() {
 }
 
 method2_fn <- function() {
+  # (a)
   who_dt <- data.table(tidyr::who)
   
+  # (b)
   who_long_dt <-
     melt(
       who_dt,
@@ -35,6 +37,7 @@ method2_fn <- function() {
       na.rm = TRUE
     )
   
+  # (c)
   who_long_dt <-
     mutate(who_long_dt,
            tmp = stringr::str_replace(tmp, "newrel", "new_rel")) %>%
@@ -47,11 +50,13 @@ method2_fn <- function() {
              sep = 1,
              into = c("gender", "age"))
   
+  # (d)
   nwho_dt <-
     select(who_long_dt, -new, -iso2, -iso3)
   
 }
 
+# (e)
 benchmark(
   replications = 10,
   method1_fn(),
