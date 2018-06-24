@@ -1,0 +1,86 @@
+---
+title: "VE572 Assignment 3"
+author: "Liu Yihao 515370910207"
+date: "2018-6-26"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Qurestion 1
+
+### (a)
+$$Pr(Y=1|X_1=x_1|X_2=x_2)=\frac{\exp(\beta_0+\beta_1x_1+\beta_2x_2)}{1+\exp(\beta_0+\beta_1x_1+\beta_2x_2)}$$
+$$Pr(Y=1|X_1=40|X_2=3.5)=\frac{\exp(-6+0.05\cdot40+3.5)}{1+\exp(-6+0.05\cdot40+3.5)}\approx0.378$$
+
+### (b)
+$$\frac{\exp(-6+0.05x_1+3.5)}{1+\exp(-6+0.05x_1+3.5)}=0.5$$
+$$\exp(-6+0.05x_1+3.5)=1$$
+$$x_1=50$$
+
+## Question 2
+
+### (a)
+$$odds(U.S.A|Y=1)=\frac{513}{487}$$
+$$odds(China|Y=1)=\frac{116}{9}$$
+
+### (b)
+$$OR=\frac{513/487}{928/72}=\frac{4617}{56492}\approx8.173\times10^{-2}$$
+
+### (c)
+$$\beta_0=\ln\frac{116}{9}\approx2.5819$$
+$$\beta_0+\beta_1=\ln\frac{513}{487}$$
+$$\beta_1=\ln\frac{4617}{56492}\approx-2.5043$$
+
+### (d)
+$$\beta_1=\ln(OR)$$
+
+### (e)
+$$\exp[\ln(OR)\pm1.96\times SE(\ln(OR))]=[0.0624,0.1071]$$
+
+## Question 3
+
+### (a)
+$$\int_0^{0.05}0.05+xdx+\int_{0.05}^{0.95}0.1dx+\int_{0.95}^10.1-xdx=9.75\%$$
+
+### (b)
+$$9.75\%\times9.75\%=0.950625\%$$
+
+### (c)
+$$\sqrt[100]{0.1}$$
+
+## Question 4
+
+### (a)
+```{r ex4, fig.height=4, fig.width=4, fig.align='center', echo = F}
+plot(0:10, 0:10, type = 'n', xlab = 'X1', ylab = 'X2')
+x0 = c(2, 4, 4, 6)
+y0 = c(4, 2, 6, 4)
+x1 = c(4, 6)
+y1 = c(4, 2)
+points(x0, y0, col = 'red', pch = 4)
+points(x1, y1, col = 'blue', pch = 3)
+rect(3, 3, 5, 5)
+rect(5, -1, 11, 3)
+legend("topright", c("Y=0","Y=1"), col = c('red', 'blue'), pch = c(4, 3))
+```
+
+### (b)
+$$Y(8,1)=1$$
+
+## Question 5
+
+
+
+
+
+
+
+
+
+
+
+
+
