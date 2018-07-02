@@ -1,0 +1,5 @@
+seq(2.0, 4.4, 0.3)
+paste(rep(letters[1:2], each = 2), rep(letters[24:26], 1:3), sep = "")
+as.logical(rep(1:0, (1:2) * 2))
+cumsum(10 ^ (0:5)) * (1:6)
+rep(0:3, 4) * rep(1:4, each = 4)
