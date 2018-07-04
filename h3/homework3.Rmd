@@ -72,12 +72,40 @@ $$Y(8,1)=1$$
 
 ## Question 5
 
+### (a)
+First, $C_1=(-1.5,0)$, $C_2=(1.5,0)$, so $(-2,0.5)$ should be assigned to $C_2$ and $(2,-0.5)$ should be assigned to $C_1$.
+
+Second, $C_1=(-2.5,0)$, $C_2=(2.5,0)$, so converges.
+
+### (b)
+First, $C_1=(0,0)$, $C_2=(0,0)$, we can find that all points have the same distance to the two centersm so converges.
+
+I notice that different initialization can give very different results in K-means clustering, so the randomness of initialization is very important.
 
 
+## Question 6
 
+### (a)
+```{r q6.a, echo=FALSE}
+m = matrix(c(0,0.3,0.4,0.7, 0.3,0,0.5,0.8, 0.4,0.5,0,0.45, 0.7,0.8,0.45,0), nrow = 4, ncol = 4)
+hc = hclust(as.dist(m), method = "complete")
+plot(hc)
+ct = cutree(hc, k = 2)
+```
 
+### (b)
+```{r q6.b, echo=FALSE}
+m = matrix(c(0,0.3,0.4,0.7, 0.3,0,0.5,0.8, 0.4,0.5,0,0.45, 0.7,0.8,0.45,0), nrow = 4, ncol = 4)
+hc = hclust(as.dist(m), method = "single")
+plot(hc)
+ct = cutree(hc, k = 2)
+```
 
+### (c)
+Observations 1, 2 in $C_1$ and 3, 4 in $C_2$
 
+### (d)
+Observations 1, 2, 3 in $C_1$ and 4 in $C_2$
 
 
 
