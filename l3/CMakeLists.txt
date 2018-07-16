@@ -4,5 +4,5 @@ set(CMAKE_CXX_STANDARD 14)
 
 add_executable(mapper mapper.cpp)
 add_executable(reducer reducer.cpp)
-
+add_executable(generator generator.cpp)
 
