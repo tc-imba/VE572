@@ -9,11 +9,13 @@
 using namespace std;
 
 int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
     unordered_map<size_t, size_t> m;
-    while (true) {
-        size_t id, score;
-        cin >> id >> score;
-        if (!cin) break;
+    size_t id, score;
+
+    while (cin >> id >> score) {
         auto it = m.find(id);
         if (it == m.end()) {
             m.emplace_hint(it, id, score);
@@ -23,7 +25,7 @@ int main() {
     }
 
     for (const auto &item : m) {
-        cout << item.first << '\t' << item.second << endl;
+        cout << item.first << '\t' << item.second << '\n';
     }
 
     return 0;
