@@ -1,0 +1,26 @@
+---
+title: "VE572 Homework4"
+author: "Yihao Liu"
+date: "July 23, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Ex. 1 — Processes and cgroups
+
+1. cgroups (abbreviated from control groups) is a Linux kernel feature that limits, accounts for, and isolates the resource usage (CPU, memory, disk I/O, network, etc.) of a collection of processes.
+
+2. differences:
+
+similarities: 
+
+
+
+
+
+
+
+

@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="h4" />
         <module name="l1" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="10">
+      <module name="h4" target="1.5" />
       <module name="l1" target="10" />
     </bytecodeTargetLevel>
   </component>
