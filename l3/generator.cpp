@@ -10,10 +10,10 @@
 
 using namespace std;
 
-const size_t NAMES_SIZE = 1000000;
-const size_t DATA_SZIE = 50000000;
+int main(int argc, char *argv[]) {
+    const size_t NAMES_SIZE = argc > 1 ? strtoul(argv[1], nullptr, 10) : 10000;
+    const size_t DATA_SZIE = NAMES_SIZE * 50;
 
-int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(nullptr);
 
@@ -60,7 +60,7 @@ int main() {
 
     cout << "Generating grades";
     ofstream grades("grades.csv");
-    grades << "name,ID,grade\n";
+    //grades << "name,ID,grade\n";
     for (size_t i = 0; i < DATA_SZIE; i++) {
         size_t index = NAMES_SIZE * rand() / RAND_MAX;
         size_t score = (size_t) 101 * rand() / RAND_MAX;

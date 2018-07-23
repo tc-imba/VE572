@@ -1,0 +1,19 @@
+{
+  "namespace": "grades.avro",
+  "type": "record",
+  "name": "Grade",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "score",
+      "type": "int"
+    }
+  ]
+}

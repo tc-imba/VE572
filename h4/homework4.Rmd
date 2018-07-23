@@ -2,7 +2,9 @@
 title: "VE572 Homework4"
 author: "Yihao Liu"
 date: "July 23, 2018"
-output: pdf_document
+output: 
+  pdf_document: 
+    highlight: pygments
 ---
 
 ```{r setup, include=FALSE}
@@ -21,6 +23,58 @@ similarities:
 
 
 
+# Ex. 2 — MapReduce
+
+1. See the class `Map` in file `MapReduce.java`
+
+2. See the class `Reduce` in file `MapReduce.java`
+
+3. See the function `main` in file `MapReduce.java`
+
+4.
+
+data size | 5e4   | 5e5   | 5e6    | 5e7
+----------|-------|-------|--------|-------
+streaming (s) | 2.474 | 3.415 | 13.464 | 128.59
+java (s)      | 1.200 | 2.170 | 9.184  | 122.22
+
+# Ex. 3
+
+1. add `avro` in `pom.xml` of `maven`
+
+```xml
+<!-- https://mvnrepository.com/artifact/org.apache.avro/avro -->
+<dependency>
+     <groupId>org.apache.avro</groupId>
+     <artifactId>avro</artifactId>
+     <version>1.8.2</version>
+</dependency>
+```
 
 
+2. grades.avsc
+
+```json
+{
+  "namespace": "grades.avro",
+  "type": "record",
+  "name": "Grade",
+  "fields": [
+    {
+      "name": "name",
+      "type": "string"
+    },
+    {
+      "name": "id",
+      "type": "string"
+    },
+    {
+      "name": "score",
+      "type": "int"
+    }
+  ]
+}
+```
+
+2. 
 
