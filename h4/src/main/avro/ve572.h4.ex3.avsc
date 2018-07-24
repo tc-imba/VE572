@@ -1,5 +1,5 @@
 {
-  "namespace": "grades.avro",
+  "namespace": "ve572.h4.ex3.avro",
   "type": "record",
   "name": "Grade",
   "fields": [
