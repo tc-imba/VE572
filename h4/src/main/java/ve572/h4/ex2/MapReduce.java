@@ -1,5 +1,4 @@
-package pers.tcimba.hadoop.mapreduce;
-
+package ve572.h4.ex2;
 
 import java.io.IOException;
 import java.util.StringTokenizer;
