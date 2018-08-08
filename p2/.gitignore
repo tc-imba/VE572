@@ -1,0 +1,5 @@
+# Created by .ignore support plugin (hsz.mobi)
+msd_onevalue.csv
+spark-warehouse
+logs
+h2ologs

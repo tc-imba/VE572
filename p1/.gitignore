@@ -1,1 +1,4 @@
 .httr-oauth
+msd_onevalue.csv
+logs
+spark-warehouse
