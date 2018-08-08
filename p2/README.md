@@ -51,3 +51,8 @@ Copy the file to your R script directory and it will works.
 Set the working directory as the R script directory, 
 and make sure you have all of the dependencies installed.
 You will get a k-means result after a few minutes.
+
+The code runs on the standalone mode in default, but can be simply changed
+into cluster mode if a spark cluster in lab4 is built.
+
+
