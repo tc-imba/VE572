@@ -5,17 +5,20 @@ library(tidyr)
 library(h2o)
 library(data.table)
 
+# An example dataset file of about 4 MB (1%)
+filename = "msd_example.csv"
+
+# The all dataset file of about 400 MB
+# filename = "msd_onevalue.csv"
+
 h2o.init()
 options(rsparkling.sparklingwater.version = "2.3.10")
 options(rsparkling.sparklingwater.location = "sparkling-water-assembly_2.11-2.3.10-all.jar")
 
-
 spark_install(version = "2.3.0")
-
 sc <- spark_connect(master = "local", version = "2.3.0")
 
-song_tbl <- spark_read_csv(sc, "msd", "msd_onevalue.csv", sep = ",", header = TRUE)
-
+song_tbl <- spark_read_csv(sc, "msd", filename, sep = ",", header = TRUE)
 
 song_clean_tbl <- song_tbl %>%
   mutate(artist_familiarity_ = as.numeric(artist_familiarity)) %>%
