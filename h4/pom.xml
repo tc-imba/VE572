@@ -28,6 +28,12 @@
             <artifactId>avro</artifactId>
             <version>1.8.2</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/org.apache.avro/avro-mapred -->
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro-mapred</artifactId>
+            <version>1.8.2</version>
+        </dependency>
     </dependencies>
 
     <build>

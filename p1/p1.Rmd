@@ -144,4 +144,29 @@ labels = c ("Android" , "iPhone")
 
 
 
+## Task 3
+
+```{r t3}
+# (a)
+library(data.table)
+library(h2o)
+song_tbl = fread("msd_onevalue.csv", header = TRUE)
+
+# (b)
+library(dplyr)
+h2o.init()
+selection = c("artist_familiarity","artist_hotttnesss","duration","loudness","tempo","song_id")
+feature = c("artist_familiarity", "artist_hotttnesss", "duration", "loudness", "tempo")
+song.h2o = as.h2o(select(song_tbl, selection))
+(song.kmeans1 = h2o.kmeans(training_frame = song.h2o, k = 1, x = feature))
+(song.kmeans2 = h2o.kmeans(training_frame = song.h2o, k = 2, x = feature))
+(song.kmeans3 = h2o.kmeans(training_frame = song.h2o, k = 3, x = feature))
+(song.kmeans4 = h2o.kmeans(training_frame = song.h2o, k = 4, x = feature))
+(song.kmeans5 = h2o.kmeans(training_frame = song.h2o, k = 5, x = feature))
+
+# (c)
+# I found that the k-means of different runnings are different, so the initial state is random.
+```
+
+
 

@@ -47,7 +47,7 @@ public class MapReduce {
 
     public static void main(String[] args) throws Exception {
         Configuration conf = new Configuration();
-        Job job = Job.getInstance(conf, "word count");
+        Job job = Job.getInstance(conf, "ex2");
         job.setJarByClass(MapReduce.class);
         job.setMapperClass(Map.class);
         job.setCombinerClass(Reduce.class);
